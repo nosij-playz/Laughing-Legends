@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laughing Legends - Premium Quiz Game</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/particles.css">
+</head>
+<body>
+    <!-- Animated Background Elements -->
+    <div class="particles-container" id="particles"></div>
+    <div class="gradient-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+    
+    
+    <!-- Main Intro Content -->
+    <main class="intro-container" role="main" aria-labelledby="mainTitle">
+        <!-- Animated Logo -->
+        <div class="logo-container">
+            <div class="logo-circle"></div>
+            <h1 class="game-title" id="mainTitle">
+                <span class="title-row title-top">
+                    <span class="word-laughing">
+                        <span class="letter" data-letter="L">L</span>
+                        <span class="letter" data-letter="A">A</span>
+                        <span class="letter" data-letter="U">U</span>
+                        <span class="letter" data-letter="G">G</span>
+                        <span class="letter" data-letter="H">H</span>
+                        <span class="letter" data-letter="I">I</span>
+                        <span class="letter" data-letter="N">N</span>
+                        <span class="letter" data-letter="G">G</span>
+                    </span>
+                </span>
+                <span class="title-row title-bottom">
+                    <span class="word-legends">
+                        <span class="letter" data-letter="L">L</span>
+                        <span class="letter" data-letter="E">E</span>
+                        <span class="letter" data-letter="G">G</span>
+                        <span class="letter" data-letter="E">E</span>
+                        <span class="letter" data-letter="N">N</span>
+                        <span class="letter" data-letter="D">D</span>
+                        <span class="letter" data-letter="S">S</span>
+                    </span>
+                </span>
+            </h1>
+        </div>
+        
+        <!-- Acronym Reveal -->
+        <div class="acronym-reveal" id="acronymReveal">
+            <div class="acronym-line" data-acronym="Learn">
+                <span class="highlight">L</span>earn
+            </div>
+            <div class="acronym-line" data-acronym="And">
+                <span class="highlight">A</span>nd
+            </div>
+            <div class="acronym-line" data-acronym="Unfold">
+                <span class="highlight">U</span>nfold
+            </div>
+            <div class="acronym-line" data-acronym="Genuine">
+                <span class="highlight">G</span>enuine
+            </div>
+            <div class="acronym-line" data-acronym="Human">
+                <span class="highlight">H</span>uman
+            </div>
+            <div class="acronym-line" data-acronym="Legends">
+                <span class="highlight">L</span>egends
+            </div>
+        </div>
+        
+        <!-- Animated Characters Preview -->
+        <div class="characters-preview">
+            <div class="character-card" data-character="1">
+                <div class="character-avatar"></div>
+                <div class="character-glow"></div>
+            </div>
+            <div class="character-card" data-character="2">
+                <div class="character-avatar"></div>
+                <div class="character-glow"></div>
+            </div>
+            <div class="character-card" data-character="3">
+                <div class="character-avatar"></div>
+                <div class="character-glow"></div>
+            </div>
+            <div class="character-card" data-character="4">
+                <div class="character-avatar"></div>
+                <div class="character-glow"></div>
+            </div>
+        </div>
+        
+        <!-- Game Description -->
+        <div class="game-description" id="gameDescription">
+            <p>Discover cartoonified legends, test your knowledge, and climb the leaderboard!</p>
+        </div>
+        
+        <!-- Progress Indicator -->
+        <div class="progress-indicator">
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <div class="progress-text">Loading Amazing Experience...</div>
+        </div>
+        
+        <!-- Start Button removed for background-only usage -->
+    </main>
+    
+    <!-- Audio Elements -->
+    <audio id="hoverSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
+    </audio>
+    
+    <script src="js/particles.js"></script>
+    <script src="js/text-animations.js"></script>
+    <script src="js/transitions.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,439 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 40%, #1e3a8a 100%);
+    --secondary-gradient: linear-gradient(135deg, #ff4d6d 0%, #ff7ab6 40%, #7ce7ff 100%);
+    --accent-gradient: linear-gradient(135deg, #00d4ff 0%, #4facfe 40%, #7cffb2 100%);
+    --gold-gradient: linear-gradient(135deg, #ffd54a 0%, #ff9a3d 50%, #ff6b00 100%);
+    --purple-glow: 0 0 30px rgba(124, 58, 237, 0.85), 0 0 80px rgba(79, 70, 229, 0.35);
+    --pink-glow: 0 0 28px rgba(255, 77, 109, 0.9), 0 0 60px rgba(255, 122, 182, 0.35);
+    --blue-glow: 0 0 28px rgba(0, 212, 255, 0.9), 0 0 60px rgba(79, 172, 254, 0.35);
+    --neon-text-shadow: 0 0 6px #fff, 0 0 12px rgba(255,255,255,0.9), 0 0 24px currentColor, 0 0 48px currentColor;
+    --rand1: 40,80,200;
+    --rand2: 200,40,120;
+    --rand3: 120,200,60;
+}
+
+body {
+    background: radial-gradient(circle at 10% 20%, rgba(79,70,229,0.12), transparent 8%),
+                radial-gradient(circle at 90% 80%, rgba(255,77,109,0.08), transparent 10%),
+                linear-gradient(135deg, #05060a 0%, #0f1724 50%, #071129 100%);
+    background-size: 300% 300%, 300% 300%, 400% 400%;
+    animation: gradientShift 18s ease-in-out infinite;
+    color: #fff;
+        overflow-x: hidden;
+        overflow-y: auto;
+        min-height: 100vh;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    position: relative;
+}
+
+.intro-container {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+        padding: 4vw 4vw 6vw;
+        min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Logo Styles */
+.logo-container {
+    position: relative;
+    margin-bottom: 3rem;
+}
+
+.logo-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+        width: min(56vw, 480px);
+        height: min(56vw, 480px);
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(124,58,237,0.45), transparent 25%),
+                var(--primary-gradient);
+    opacity: 0.18;
+    filter: blur(48px) saturate(1.2);
+    animation: pulse 6s ease-in-out infinite;
+}
+
+.game-title {
+    display: inline-flex;
+    flex-direction: column; /* stack the two rows */
+    align-items: center;    /* center both rows horizontally */
+    gap: 0.25rem;          /* small space between top and bottom rows */
+    font-size: 5rem;
+    font-weight: 900;
+    letter-spacing: 6px;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    color: transparent;
+    background: linear-gradient(90deg, #fff 0%, #ffd54a 20%, #ff6b00 60%, #ff4d6d 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    text-shadow: var(--neon-text-shadow);
+    filter: drop-shadow(0 0 18px rgba(255,255,255,0.06));
+    mix-blend-mode: screen;
+        /* fluid font sizing handled with clamp lower in file */
+}
+
+.letter {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(50px) rotateX(90deg);
+    text-shadow: 0 0 18px currentColor, 0 0 36px currentColor;
+}
+
+.letter-space {
+    display: inline-block;
+    width: 40px;
+}
+
+/* Keep the word LEGENDS on a single line */
+.word-legends {
+    display: inline-block; /* treat the word as a single inline block */
+    white-space: nowrap;    /* prevent line breaks inside */
+}
+
+/* Keep the first word LAUGHING on a single line as well */
+.word-laughing {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+/* Responsive scaling: allow title to shrink but keep LEGENDS intact */
+.game-title { 
+    /* use clamp to preserve size but allow scaling on narrow screens */
+    font-size: clamp(2.2rem, 6vw + 1rem, 5rem);
+}
+
+/* Row-specific styling: keep rows centered and prevent wrapping inside rows */
+.title-row {
+    display: inline-block;
+    text-align: center;
+    width: 100%;
+}
+.title-top { align-self: flex-start; }
+.title-bottom { align-self: center; }
+
+/* Acronym Styles */
+.acronym-reveal {
+    margin: 2rem 0;
+    opacity: 0;
+}
+
+.acronym-line {
+    display: inline-block;
+    margin: 0 15px;
+    font-size: 1.4rem;
+    font-weight: 300;
+    opacity: 0;
+    transform: translateX(-30px);
+}
+
+.highlight {
+    font-weight: 700;
+    background: var(--gold-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Character Preview */
+.characters-preview {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 3rem 0;
+    opacity: 0;
+}
+
+.character-card {
+    position: relative;
+        width: clamp(64px, 12vw, 120px);
+        height: clamp(64px, 12vw, 120px);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: default; /* disable pointer as it's background */
+    transition: transform 0.6s cubic-bezier(.2,.9,.2,1), opacity 0.6s ease;
+}
+
+.character-avatar {
+    width: clamp(36px, 6vw, 60px);
+    height: clamp(36px, 6vw, 60px);
+    border-radius: 50%;
+    background: var(--secondary-gradient);
+    position: relative;
+    z-index: 2;
+}
+
+.character-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    background: var(--secondary-gradient);
+    opacity: 0;
+    filter: blur(20px);
+    transition: opacity 0.3s ease;
+}
+
+
+/* Disable hover interactions - background only */
+.character-card:hover {
+    transform: none;
+}
+.character-card:hover .character-glow { opacity: 0; }
+
+/* Game Description */
+.game-description {
+    font-size: 1.3rem;
+    margin: 2rem 0;
+    max-width: 600px;
+    line-height: 1.6;
+    opacity: 0;
+}
+
+/* Progress Indicator */
+.progress-indicator {
+    width: min(420px, 86%);
+    max-width: 90%;
+    margin: 2rem 0;
+    opacity: 0;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--accent-gradient);
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Start Button */
+.start-button {
+    /* removed visual/button role - keep hidden for background use */
+    display: none !important;
+}
+
+.button-text {
+    position: relative;
+    z-index: 2;
+}
+
+.button-glow {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.6s ease;
+}
+
+.button-sparkle {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0;
+    filter: blur(2px);
+}
+
+
+/* start-button disabled entirely for background */
+
+
+/* Gradient Orbs */
+.gradient-orbs {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.3;
+}
+
+.orb-1 {
+    width: 640px;
+    height: 640px;
+    background: radial-gradient(circle at 40% 40%, rgba(124,58,237,0.6), transparent 30%), var(--primary-gradient);
+    top: -260px;
+    left: -260px;
+    animation: float-orb 28s ease-in-out infinite;
+}
+
+.orb-2 {
+    width: 520px;
+    height: 520px;
+    background: radial-gradient(circle at 60% 60%, rgba(255,77,109,0.5), transparent 30%), var(--secondary-gradient);
+    bottom: -220px;
+    right: -220px;
+    animation: float-orb 34s ease-in-out infinite reverse;
+}
+
+.orb-3 {
+    width: 360px;
+    height: 360px;
+    background: radial-gradient(circle at 30% 70%, rgba(0,212,255,0.45), transparent 25%), var(--accent-gradient);
+    top: 45%;
+    right: -160px;
+    animation: float-orb 30s ease-in-out infinite;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .game-title {
+        font-size: 2.5rem;
+        letter-spacing: 2px;
+    }
+    
+    .acronym-line {
+        display: block;
+        margin: 10px 0;
+        font-size: 1.2rem;
+    }
+    
+    .characters-preview {
+        gap: 15px;
+    }
+    
+    .character-card {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .character-avatar {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .game-description {
+        font-size: 1.1rem;
+    }
+    
+    .start-button {
+        padding: 15px 30px;
+        font-size: 1.1rem;
+    }
+}
+
+/* Glass Blocks */
+.glass-block {
+    position: fixed;
+    z-index: 10;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04));
+    border: 1.5px solid rgba(255,255,255,0.13);
+    backdrop-filter: blur(16px) saturate(1.3);
+    box-shadow: 0 12px 60px rgba(0,0,0,0.18), 0 0 80px rgba(255,255,255,0.04) inset;
+    opacity: 0.92;
+    transition: opacity 0.7s cubic-bezier(.2,.9,.2,1);
+    /* No transform/scale animation */
+}
+
+.glass-left {
+    left: 5vw;
+    top: 50%;
+        width: min(45vw, 700px);
+        height: min(45vw, 700px);
+    max-width: 700px;
+    max-height: 700px;
+    border-radius: 40px;
+    transform: translateY(-50%);
+}
+
+.glass-right {
+    right: 5vw;
+    top: 50%;
+        width: min(28vw, 420px);
+        height: 80vh;
+    max-width: 420px;
+    max-height: 900px;
+    border-radius: 32px;
+    transform: translateY(-50%);
+}
+
+/* Active visual overlay inside glass blocks */
+.glass-block::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle at 10% 20%, rgba(var(--rand1),0.10), transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(var(--rand2),0.08), transparent 25%),
+                linear-gradient(135deg, rgba(var(--rand3),0.06), transparent 40%);
+    mix-blend-mode: screen;
+    filter: blur(8px) saturate(1.1);
+    opacity: 0.9;
+    transform: scale(1);
+}
+
+/* Activation pulse for glass blocks */
+/* Remove pulse/activation animation; only show/hide via opacity */
+
+@keyframes glassGlow {
+    0% { filter: blur(6px) saturate(1); opacity: 0.7; }
+    50% { filter: blur(12px) saturate(1.3); opacity: 1; }
+    100% { filter: blur(6px) saturate(1); opacity: 0.7; }
+}
+
+/* Randomized dynamic background variations (CSS-only hint; JS will update variables) */
+.dynamic-bg {
+    background-size: 200% 200%;
+    animation: gradientShift 22s ease-in-out infinite;
+}
+
+/* Smaller breakpoints for very narrow devices */
+@media (max-width: 420px) {
+    .game-title { font-size: clamp(1.6rem, 8vw, 2.4rem); letter-spacing: 1.5px; }
+    .logo-circle { width: min(72vw, 360px); height: min(72vw, 360px); }
+    .characters-preview { gap: 10px; }
+    .acronym-reveal { margin: 1rem 0; }
+    .game-description { font-size: 1rem; padding: 0 6vw; }
+    .progress-indicator { width: 92%; }
+    .orb-1, .orb-2, .orb-3 { transform: translate3d(0,0,0); }
+}

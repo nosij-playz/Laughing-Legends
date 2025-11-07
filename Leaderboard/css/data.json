@@ -1,0 +1,74 @@
+{
+  "todayLeaderboard": [
+    {
+      "name": "Legendary Lions",
+      "gamesPlayed": 128,
+      "wins": 42,
+      "totalPoints": 9820,
+      "status": "online"
+    },
+    {
+      "name": "Quiz Queens",
+      "gamesPlayed": 115,
+      "wins": 38,
+      "totalPoints": 8760,
+      "status": "online"
+    },
+    {
+      "name": "Brainy Bears",
+      "gamesPlayed": 120,
+      "wins": 35,
+      "totalPoints": 8420,
+      "status": "offline"
+    },
+    {
+      "name": "Smart Sharks",
+      "gamesPlayed": 110,
+      "wins": 32,
+      "totalPoints": 7990,
+      "status": "online"
+    },
+    {
+      "name": "Master Mavericks",
+      "gamesPlayed": 105,
+      "wins": 30,
+      "totalPoints": 7550,
+      "status": "offline"
+    },
+    {
+      "name": "Wise Wolves",
+      "gamesPlayed": 100,
+      "wins": 28,
+      "totalPoints": 7210,
+      "status": "online"
+    },
+    {
+      "name": "Gamer Giants",
+      "gamesPlayed": 95,
+      "wins": 25,
+      "totalPoints": 6890,
+      "status": "online"
+    },
+    {
+      "name": "Puzzle Panthers",
+      "gamesPlayed": 90,
+      "wins": 22,
+      "totalPoints": 6540,
+      "status": "offline"
+    },
+    {
+      "name": "Trivia Tigers",
+      "gamesPlayed": 85,
+      "wins": 20,
+      "totalPoints": 6210,
+      "status": "online"
+    },
+    {
+      "name": "Knowledge Knights",
+      "gamesPlayed": 80,
+      "wins": 18,
+      "totalPoints": 5980,
+      "status": "offline"
+    }
+  ]
+}

@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Leaderboard | Laughing Legends</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* All CSS remains the same as previous version */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #6a11cb;
+            --secondary: #2575fc;
+            --accent: #ff8a00;
+            --dark: #1a1a2e;
+            --light: #ffffff;
+            --gold: #ffd700;
+            --silver: #c0c0c0;
+            --bronze: #cd7f32;
+            --online: #4CAF50;
+            --offline: #9E9E9E;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--dark) 0%, #16213e 50%, #0f3460 100%);
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .loading-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--dark);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top: 5px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        .loading-text {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(106, 17, 203, 0.1);
+            animation: float 25s infinite linear;
+        }
+
+        .circle-1 {
+            width: 400px;
+            height: 400px;
+            top: -200px;
+            left: -200px;
+            animation-delay: 0s;
+        }
+
+        .circle-2 {
+            width: 300px;
+            height: 300px;
+            bottom: -150px;
+            right: -150px;
+            animation-delay: 5s;
+            background: rgba(37, 117, 252, 0.1);
+        }
+
+        .circle-3 {
+            width: 200px;
+            height: 200px;
+            top: 50%;
+            right: -100px;
+            animation-delay: 10s;
+            background: rgba(255, 138, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 20px 20px;
+            position: relative;
+        }
+
+        .leaderboard-title {
+            font-size: 4.5rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, var(--accent), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 138, 0, 0.3);
+            letter-spacing: 3px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .leaderboard-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            border-radius: 2px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 30px;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .timer-container {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .timer-icon {
+            font-size: 1.5rem;
+            color: var(--accent);
+        }
+
+        .timer-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .leaderboard-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease;
+        }
+
+        .leaderboard-container.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 
+                        0 0 80px rgba(106, 17, 203, 0.1) inset;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .glass-panel:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3), 
+                        0 0 100px rgba(106, 17, 203, 0.15) inset;
+        }
+
+        .stats-panel {
+            width: 380px;
+            padding: 30px;
+        }
+
+        .panel-title {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: 700;
+            color: var(--accent);
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .panel-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        .team-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+        }
+
+        .team-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-right: 20px;
+            box-shadow: 0 0 20px rgba(106, 17, 203, 0.5);
+            position: relative;
+        }
+
+        .status-indicator {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid var(--dark);
+        }
+
+        .status-online {
+            background-color: var(--online);
+            box-shadow: 0 0 8px var(--online);
+        }
+
+        .status-offline {
+            background-color: var(--offline);
+        }
+
+        .team-details h3 {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+        }
+
+        .team-details p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .stats-list {
+            list-style: none;
+        }
+
+        .stats-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 1.1rem;
+        }
+
+        .stats-list li:last-child {
+            border-bottom: none;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .leaderboard-panel {
+            width: 700px;
+            padding: 30px;
+        }
+
+        .leaderboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .time-filter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .time-filter i {
+            color: var(--accent);
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .leaderboard-table thead {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .leaderboard-table th {
+            padding: 18px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--accent);
+            font-size: 1.1rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .leaderboard-table th:first-child {
+            width: 80px;
+            text-align: center;
+        }
+
+        .leaderboard-table th:nth-child(2) {
+            width: 200px;
+        }
+
+        .leaderboard-table th:nth-child(3),
+        .leaderboard-table th:nth-child(4) {
+            width: 120px;
+            text-align: right;
+        }
+
+        .leaderboard-table th:nth-child(5) {
+            width: 100px;
+            text-align: center;
+        }
+
+        .leaderboard-table tbody tr {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: scale(1.01);
+        }
+
+        .leaderboard-table td {
+            padding: 20px 15px;
+            font-size: 1.05rem;
+        }
+
+        .leaderboard-table td:first-child {
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+
+        .leaderboard-table td:nth-child(3),
+        .leaderboard-table td:nth-child(4) {
+            text-align: right;
+            font-weight: 700;
+        }
+
+        .leaderboard-table td:nth-child(5) {
+            text-align: center;
+        }
+
+        .rank-1 {
+            color: var(--gold);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .rank-2 {
+            color: var(--silver);
+            text-shadow: 0 0 10px rgba(192, 192, 192, 0.5);
+        }
+
+        .rank-3 {
+            color: var(--bronze);
+            text-shadow: 0 0 10px rgba(205, 127, 50, 0.5);
+        }
+
+        .team-cell {
+            display: flex;
+            align-items: center;
+        }
+
+        .team-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.2rem;
+            position: relative;
+        }
+
+        .team-status {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid var(--dark);
+        }
+
+        .status-online {
+            background-color: var(--online);
+            box-shadow: 0 0 6px var(--online);
+        }
+
+        .status-offline {
+            background-color: var(--offline);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-gold {
+            background: linear-gradient(45deg, var(--gold), #ffaa00);
+            color: #000;
+        }
+
+        .badge-silver {
+            background: linear-gradient(45deg, var(--silver), #e0e0e0);
+            color: #000;
+        }
+
+        .badge-bronze {
+            background: linear-gradient(45deg, var(--bronze), #e67e22);
+            color: #fff;
+        }
+
+        .badge-pro {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: #fff;
+        }
+
+        .badge-player {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-online-badge {
+            background: rgba(76, 175, 80, 0.2);
+            color: var(--online);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .status-offline-badge {
+            background: rgba(158, 158, 158, 0.2);
+            color: var(--offline);
+            border: 1px solid rgba(158, 158, 158, 0.3);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            25% {
+                transform: translate(40px, 40px) rotate(90deg);
+            }
+            50% {
+                transform: translate(0, 80px) rotate(180deg);
+            }
+            75% {
+                transform: translate(-40px, 40px) rotate(270deg);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .leaderboard-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .stats-panel, .leaderboard-panel {
+                width: 90%;
+                max-width: 700px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .leaderboard-title {
+                font-size: 3rem;
+            }
+            
+            .timer-container {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin: 0 auto 20px;
+                width: fit-content;
+            }
+            
+            .leaderboard-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .team-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .team-logo {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .leaderboard-table {
+                font-size: 0.9rem;
+            }
+            
+            .leaderboard-table th, 
+            .leaderboard-table td {
+                padding: 12px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-container" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading Team Data...</div>
+    </div>
+
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="bg-circle circle-1"></div>
+        <div class="bg-circle circle-2"></div>
+        <div class="bg-circle circle-3"></div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <h1 class="leaderboard-title">TEAM LEADERBOARD</h1>
+        <p class="subtitle">See which teams are dominating the game today</p>
+        
+        <!-- Timer Display -->
+        <div class="timer-container">
+            <div class="timer-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="timer-text" id="timer">Refresh in 60 seconds</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="leaderboard-container" id="leaderboardContainer">
+        <!-- Team Stats Panel -->
+        <div class="glass-panel stats-panel">
+            <h2 class="panel-title">Top Team Stats</h2>
+            
+            <div class="team-info">
+                <div class="team-logo">
+                    <i class="fas fa-crown" id="topTeamIcon"></i>
+                    <div class="status-indicator" id="topTeamStatusIndicator"></div>
+                </div>
+                <div class="team-details">
+                    <h3 id="topTeamName">Loading...</h3>
+                    <p id="topTeamRank">Rank: #1</p>
+                </div>
+            </div>
+            
+            <ul class="stats-list">
+                <li>
+                    <span>Games Played</span>
+                    <span class="stat-value" id="topTeamGamesPlayed">0</span>
+                </li>
+                <li>
+                    <span>Wins</span>
+                    <span class="stat-value" id="topTeamWins">0</span>
+                </li>
+                <li>
+                    <span>Total Points</span>
+                    <span class="stat-value" id="topTeamPoints">0</span>
+                </li>
+                <li>
+                    <span>Status</span>
+                    <span class="stat-value" id="topTeamStatus">Loading...</span>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Leaderboard Panel -->
+        <div class="glass-panel leaderboard-panel">
+            <div class="leaderboard-header">
+                <h2 class="panel-title">Today's Top Teams</h2>
+                <div class="time-filter">
+                    <i class="fas fa-calendar-day"></i>
+                    <span>Today's Rankings</span>
+                </div>
+            </div>
+            
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Team</th>
+                        <th>Wins</th>
+                        <th>Points</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboardBody">
+                    <!-- Teams will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // SIMPLIFIED VERSION - Always use sample data first
+        document.addEventListener('DOMContentLoaded', function() {
+            let timeLeft = 60;
+            const timerElement = document.getElementById('timer');
+            const loadingScreen = document.getElementById('loadingScreen');
+            const leaderboardContainer = document.getElementById('leaderboardContainer');
+
+            // Function to load and display data
+            function loadData() {
+                console.log('Starting data load...');
+                
+                // Fetch authoritative data from the server-backed endpoint (Firestore)
+                fetch('/data.json')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('/data.json not available');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Data loaded from /data.json:', data);
+                        // Expect the payload to include todayLeaderboard array
+                        if (data && Array.isArray(data.todayLeaderboard)) {
+                            processTeamData(data.todayLeaderboard);
+                        } else if (Array.isArray(data)) {
+                            processTeamData(data);
+                        } else {
+                            throw new Error('Unexpected data shape');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Failed to load leaderboard data from /data.json:', error);
+                        // Hide loading and show an in-table error message
+                        loadingScreen.style.opacity = '0';
+                        setTimeout(() => {
+                            loadingScreen.style.display = 'none';
+                            leaderboardContainer.classList.add('loaded');
+                            const leaderboardBody = document.getElementById('leaderboardBody');
+                            leaderboardBody.innerHTML = `
+                                <tr>
+                                    <td colspan="5" style="text-align:center;padding:40px;color:rgba(255,255,255,0.7);">
+                                        Unable to load leaderboard data. Please check the server or the <code>/data.json</code> endpoint.
+                                    </td>
+                                </tr>`;
+                            // Update top team area to indicate no data
+                            document.getElementById('topTeamName').textContent = 'No data';
+                            document.getElementById('topTeamGamesPlayed').textContent = '0';
+                            document.getElementById('topTeamWins').textContent = '0';
+                            document.getElementById('topTeamPoints').textContent = '0';
+                            document.getElementById('topTeamStatus').textContent = 'N/A';
+                        }, 500);
+                    });
+            }
+
+            // Initialize
+            setTimeout(() => {
+                loadData();
+            }, 1000);
+
+            // Timer functionality
+            const countdown = setInterval(function() {
+                timeLeft--;
+                timerElement.textContent = `Refresh in ${timeLeft} seconds`;
+                
+                if (timeLeft <= 10) {
+                    timerElement.style.animation = 'pulse 1s infinite';
+                    timerElement.style.color = '#ff8a00';
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    window.location.href = '/';
+                }
+            }, 1000);
+        });
+
+    
+
+        // Function to update team icon based on name
+        function updateTeamIcon(elementId, teamName) {
+            const iconElement = document.getElementById(elementId);
+            let iconClass = 'fas fa-users';
+            
+            if (teamName.includes('Lion')) iconClass = 'fas fa-crown';
+            else if (teamName.includes('Queen')) iconClass = 'fas fa-chess-queen';
+            else if (teamName.includes('Bear')) iconClass = 'fas fa-paw';
+            else if (teamName.includes('Shark')) iconClass = 'fas fa-fish';
+            else if (teamName.includes('Maverick')) iconClass = 'fas fa-rocket';
+            else if (teamName.includes('Wolf')) iconClass = 'fas fa-paw';
+            else if (teamName.includes('Giant')) iconClass = 'fas fa-gamepad';
+            else if (teamName.includes('Panther')) iconClass = 'fas fa-paw';
+            else if (teamName.includes('Tiger')) iconClass = 'fas fa-paw';
+            else if (teamName.includes('Knight')) iconClass = 'fas fa-shield-alt';
+            
+            iconElement.className = iconClass;
+        }
+
+        // Function to process team data and calculate rankings
+        function processTeamData(teams) {
+            console.log('Processing teams data:', teams);
+            
+            // Hide loading screen
+            const loadingScreen = document.getElementById('loadingScreen');
+            const leaderboardContainer = document.getElementById('leaderboardContainer');
+            
+            loadingScreen.style.opacity = '0';
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+                leaderboardContainer.classList.add('loaded');
+            }, 500);
+
+            // Sort teams by total points (descending)
+            teams.sort((a, b) => b.totalPoints - a.totalPoints);
+            
+            // Add rank to each team
+            teams.forEach((team, index) => {
+                team.rank = index + 1;
+            });
+            
+            // Display top team stats
+            displayTopTeamStats(teams[0]);
+            
+            // Display leaderboard
+            populateLeaderboard(teams);
+        }
+
+        // Function to display top team stats
+        function displayTopTeamStats(topTeam) {
+            console.log('Displaying top team:', topTeam);
+            
+            document.getElementById('topTeamName').textContent = topTeam.name;
+            document.getElementById('topTeamRank').textContent = `Rank: #${topTeam.rank}`;
+            document.getElementById('topTeamGamesPlayed').textContent = topTeam.gamesPlayed;
+            document.getElementById('topTeamWins').textContent = topTeam.wins;
+            document.getElementById('topTeamPoints').textContent = topTeam.totalPoints.toLocaleString();
+            document.getElementById('topTeamStatus').textContent = topTeam.status.toUpperCase();
+            
+            // Update status indicator
+            const statusIndicator = document.getElementById('topTeamStatusIndicator');
+            if (topTeam.status === 'online') {
+                statusIndicator.className = 'status-indicator status-online';
+            } else {
+                statusIndicator.className = 'status-indicator status-offline';
+            }
+            
+            // Update icon based on team name
+            updateTeamIcon('topTeamIcon', topTeam.name);
+        }
+
+        // Function to populate leaderboard
+        function populateLeaderboard(teams) {
+            const leaderboardBody = document.getElementById('leaderboardBody');
+            
+            leaderboardBody.innerHTML = '';
+            
+            teams.forEach(team => {
+                const row = document.createElement('tr');
+                
+                // Add rank class for top 3 teams
+                let rankClass = '';
+                if (team.rank === 1) rankClass = 'rank-1';
+                if (team.rank === 2) rankClass = 'rank-2';
+                if (team.rank === 3) rankClass = 'rank-3';
+                
+                // Determine badge based on rank
+                let badgeClass = 'badge-player';
+                if (team.rank === 1) badgeClass = 'badge-gold';
+                if (team.rank === 2) badgeClass = 'badge-silver';
+                if (team.rank === 3) badgeClass = 'badge-bronze';
+                if (team.rank <= 6 && team.rank > 3) badgeClass = 'badge-pro';
+                
+                // Determine status badge
+                const statusClass = team.status === 'online' ? 'status-online-badge' : 'status-offline-badge';
+                const statusText = team.status === 'online' ? 'ONLINE' : 'OFFLINE';
+                
+                row.innerHTML = `
+                    <td class="${rankClass}">${team.rank}</td>
+                    <td>
+                        <div class="team-cell">
+                            <div class="team-icon">
+                                <i class="fas fa-users" id="teamIcon-${team.rank}"></i>
+                                <div class="team-status status-${team.status}"></div>
+                            </div>
+                            <div>${team.name}</div>
+                        </div>
+                    </td>
+                    <td>${team.wins}</td>
+                    <td>${team.totalPoints.toLocaleString()}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                `;
+                
+                leaderboardBody.appendChild(row);
+                
+                // Update team icon
+                setTimeout(() => {
+                    updateTeamIcon(`teamIcon-${team.rank}`, team.name);
+                }, 100);
+                
+                // Add hover effects
+                row.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.01)';
+                });
+                
+                row.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+        }
+    </script>
+</body>
+</html>
